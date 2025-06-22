@@ -468,7 +468,7 @@ function updateMap() {
 function draw(player: Player) {
   let g = createGraphics();
   drawMap(g);
-  drawPlayer(player, g);
+  player.draw(g);
 }
 
 function createGraphics() {
@@ -486,10 +486,6 @@ function drawMap(g: CanvasRenderingContext2D) {
       map[y][x].draw(g, x, y);
     }
   }
-}
-
-function drawPlayer(player: Player, g: CanvasRenderingContext2D) {
-  player.draw(g);
 }
 
 function gameLoop() {
