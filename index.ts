@@ -46,13 +46,7 @@ class Resting implements FallingState {
     return false;
   }
   moveHorizontal(player: Player, tile: Tile, dx: number) {
-    if (
-      map[player.getY()][player.getX() + dx + dx].isAir() &&
-      !map[player.getY() + 1][player.getX() + dx].isAir()
-    ) {
-      map[player.getY()][player.getX() + dx + dx] = tile;
-      moveToTile(player, player.getX() + dx, player.getY());
-    }
+    player.pushHorizontal(tile, dx);
   }
   drop(tile: Tile, x: number, y: number): void {}
 }
@@ -80,10 +74,10 @@ class Air implements Tile {
   }
   draw(g: CanvasRenderingContext2D, x: number, y: number) {}
   moveHorizontal(player: Player, dx: number) {
-    moveToTile(player, player.getX() + dx, player.getY());
+    player.moveHorizontal(dx);
   }
   moveVertical(player: Player, dy: number) {
-    moveToTile(player, player.getX(), player.getY() + dy);
+    player.moveVertical(dy);
   }
   update(x: number, y: number): void {}
   getBlockOnTopState(): FallingState {
@@ -106,10 +100,10 @@ class Flux implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(player: Player, dx: number) {
-    moveToTile(player, player.getX() + dx, player.getY());
+    player.moveHorizontal(dx);
   }
   moveVertical(player: Player, dy: number) {
-    moveToTile(player, player.getX(), player.getY() + dy);
+    player.moveVertical(dy);
   }
   update(x: number, y: number): void {}
 
@@ -253,11 +247,11 @@ class Key implements Tile {
   }
   moveHorizontal(player: Player, dx: number) {
     this.keyConfiguration.removeLock();
-    moveToTile(player, player.getX() + dx, player.getY());
+    player.move(dx, 0);
   }
   moveVertical(player: Player, dy: number): void {
     this.keyConfiguration.removeLock();
-    moveToTile(player, player.getX(), player.getY() + dy);
+    player.move(0, dy);
   }
   update(x: number, y: number): void {}
   getBlockOnTopState(): FallingState {
@@ -294,25 +288,25 @@ interface Input {
 
 class Right implements Input {
   handle(player: Player) {
-    map[player.getY()][player.getX() + 1].moveHorizontal(player, 1);
+    player.moveHorizontal(1);
   }
 }
 
 class Left implements Input {
   handle(player: Player) {
-    map[player.getY()][player.getX() - 1].moveHorizontal(player, -1);
+    player.moveHorizontal(-1);
   }
 }
 
 class Up implements Input {
   handle(player: Player) {
-    map[player.getY() - 1][player.getX()].moveVertical(player, -1);
+    player.moveVertical(-1);
   }
 }
 
 class Down implements Input {
   handle(player: Player) {
-    map[player.getY() + 1][player.getX()].moveVertical(player, 1);
+    player.moveVertical(1);
   }
 }
 
@@ -330,21 +324,33 @@ class FallStrategy {
 class Player {
   private x = 1;
   private y = 1;
-  getX() {
-    return this.x;
-  }
-  getY() {
-    return this.y;
-  }
-  setX(x: number) {
-    this.x = x;
-  }
-  setY(y: number) {
-    this.y = y;
-  }
   draw(g: CanvasRenderingContext2D) {
     g.fillStyle = "#ff0000";
     g.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
+  moveToTile(newx: number, newy: number) {
+    map[this.y][this.x] = new Air();
+    map[newy][newx] = new PlayerTile();
+    this.x = newx;
+    this.y = newy;
+  }
+  pushHorizontal(tile: Tile, dx: number) {
+    if (
+      map[this.y][this.x + dx + dx].isAir() &&
+      !map[this.y + 1][this.x + dx].isAir()
+    ) {
+      map[this.y][this.x + dx + dx] = tile;
+      moveToTile(this, this.x + dx, this.y);
+    }
+  }
+  moveHorizontal(dx: number) {
+    moveToTile(this, this.x + dx, this.y);
+  }
+  moveVertical(dy: number) {
+    moveToTile(this, this.x, this.y + dy);
+  }
+  move(dx: number, dy: number) {
+    moveToTile(this, this.x + dx, this.y + dy);
   }
 }
 
@@ -439,10 +445,7 @@ class RemoveLock2 implements RemoveStrategy {
 const YELLOW_KEY = new KeyConfiguration(new RemoveLock1(), "#ffcc00", true);
 
 function moveToTile(player: Player, newx: number, newy: number) {
-  map[player.getY()][player.getX()] = new Air();
-  map[newy][newx] = new PlayerTile();
-  player.setX(newx);
-  player.setY(newy);
+  player.moveToTile(newx, newy);
 }
 
 function update(player: Player) {
