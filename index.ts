@@ -328,29 +328,30 @@ class Player {
     g.fillStyle = "#ff0000";
     g.fillRect(this.x * TILE_SIZE, this.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
-  moveToTile(newx: number, newy: number) {
-    map[this.y][this.x] = new Air();
-    map[newy][newx] = new PlayerTile();
-    this.x = newx;
-    this.y = newy;
-  }
   pushHorizontal(tile: Tile, dx: number) {
     if (
       map[this.y][this.x + dx + dx].isAir() &&
       !map[this.y + 1][this.x + dx].isAir()
     ) {
       map[this.y][this.x + dx + dx] = tile;
-      moveToTile(this, this.x + dx, this.y);
+      this.moveToTile(this.x + dx, this.y);
     }
   }
   moveHorizontal(dx: number) {
-    moveToTile(this, this.x + dx, this.y);
+    this.moveToTile(this.x + dx, this.y);
   }
   moveVertical(dy: number) {
-    moveToTile(this, this.x, this.y + dy);
+    this.moveToTile(this.x, this.y + dy);
   }
   move(dx: number, dy: number) {
-    moveToTile(this, this.x + dx, this.y + dy);
+    this.moveToTile(this.x + dx, this.y + dy);
+  }
+
+  private moveToTile(newx: number, newy: number) {
+    map[this.y][this.x] = new Air();
+    map[newy][newx] = new PlayerTile();
+    this.x = newx;
+    this.y = newy;
   }
 }
 
@@ -443,10 +444,6 @@ class RemoveLock2 implements RemoveStrategy {
 }
 
 const YELLOW_KEY = new KeyConfiguration(new RemoveLock1(), "#ffcc00", true);
-
-function moveToTile(player: Player, newx: number, newy: number) {
-  player.moveToTile(newx, newy);
-}
 
 function update(player: Player) {
   handleInputs(player);
