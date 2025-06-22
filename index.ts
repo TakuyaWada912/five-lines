@@ -185,11 +185,11 @@ class Box implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number) {
-    this.falling.moveHorizontal(this, dx);
+    this.fallStrategy.getFalling().moveHorizontal(this, dx);
   }
   moveVertical(dy: number): void {}
   update(x: number, y: number): void {
-    this.fallStrategy.update(x, y);
+    this.fallStrategy.update(this, x, y);
   }
 }
 
