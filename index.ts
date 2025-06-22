@@ -208,11 +208,15 @@ class Key1 implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number) {
-    remove(new RemoveLock1());
+    if (true) {
+      remove(new RemoveLock1());
+    }
     moveToTile(playerx + dx, playery);
   }
   moveVertical(dy: number): void {
-    remove(new RemoveLock1());
+    if (true) {
+      remove(new RemoveLock1());
+    }
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number): void {}
@@ -252,11 +256,15 @@ class Key2 implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   moveHorizontal(dx: number) {
-    remove(new RemoveLock2());
+    if (true) {
+      remove(new RemoveLock2());
+    }
     moveToTile(playerx + dx, playery);
   }
   moveVertical(dy: number): void {
-    remove(new RemoveLock2());
+    if (true) {
+      remove(new RemoveLock2());
+    }
     moveToTile(playerx, playery + dy);
   }
   update(x: number, y: number): void {}
