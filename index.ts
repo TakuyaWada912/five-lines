@@ -132,6 +132,15 @@ function draw() {
   drawPlayer(g);
 }
 
+<<<<<<< HEAD
+=======
+  // Draw map
+  drawMap(g);
+  // Draw player
+  drawPlayer(g);
+}
+
+>>>>>>> c73e2e0cb4064e240d5c57faefccf10c5a898a20
 function drawMap(g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
